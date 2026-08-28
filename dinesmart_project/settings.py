@@ -32,7 +32,11 @@ SECRET_KEY = 'django-insecure-*!=e7#asd@=)lgwa&-sjcu_l-t$hz7p$*fv7uf-tmzkr6oda^0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'dinesmart-19qm.onrender.com',
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
