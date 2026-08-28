@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}DineSmart — Reservation{% endblock %}
+
+{% block content %}
+
+<section class="container py-5 text-center">
+
+    <div
+        style="
+        max-width:650px;
+        margin:auto;
+        background:#fff;
+        border:1px solid var(--line);
+        border-radius:12px;
+        padding:50px 30px;
+        box-shadow:0 5px 20px rgba(0,48,73,.08);
+        "
+    >
+
+        {% if success %}
+
+            <div style="
+                width:70px;
+                height:70px;
+                border-radius:50%;
+                background:#16a34a;
+                color:#fff;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                margin:0 auto 20px;
+                font-size:2rem;
+            ">
+                ✓
+            </div>
+
+        {% else %}
+
+            <div style="
+                width:70px;
+                height:70px;
+                border-radius:50%;
+                background:#dc2626;
+                color:#fff;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                margin:0 auto 20px;
+                font-size:2rem;
+            ">
+                !
+            </div>
+
+        {% endif %}
+
+        <h2>{{ message }}</h2>
+
+        <p class="mt-3" style="color:var(--ink-soft);">
+            Thank you for using DineSmart.
+        </p>
+
+        <a
+            href="{% url 'reservation' %}"
+            class="btn-brick mt-3"
+        >
+            Back to Reservations
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,402 @@
+{% extends "base.html" %}
+{% block title %}DineSmart — Table Booking{% endblock %}
+{% block nav_reserve %}active{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+
+  <span class="section-eyebrow">Table Reservation</span>
+
+  <h2 class="mb-2">Book a Table</h2>
+
+  <p style="color:var(--ink-soft);max-width:640px;">
+    Pick a date, party size, and a free time slot — we'll never double-book
+    the same table for the same time.
+  </p>
+
+  <div class="row g-4 mt-2">
+
+    <!-- =========================================================
+         BOOKING FORM
+         ========================================================= -->
+    <div class="col-lg-7">
+
+      <form method="post"
+            action="{% url 'book_reservation' %}"
+            id="bookingForm">
+
+        {% csrf_token %}
+
+        <div class="row g-3 mb-4">
+
+          <!-- Date -->
+          <div class="col-md-4">
+            <label class="form-label">Date</label>
+
+            <input type="date"
+                   class="form-control"
+                   name="date"
+                   required>
+          </div>
+
+          <!-- Party Size -->
+          <div class="col-md-4">
+            <label class="form-label">Party Size</label>
+
+            <select class="form-select" name="party_size">
+              <option value="2">2 people</option>
+              <option value="4">4 people</option>
+              <option value="6">6 people</option>
+              <option value="8">8+ people</option>
+            </select>
+          </div>
+
+          <!-- Table -->
+          <div class="col-md-4">
+            <label class="form-label">Table</label>
+
+            <select class="form-select"
+                    name="table_id"
+                    required>
+
+              {% for t in tables %}
+
+                <option value="{{ t.id }}">
+                  {{ t.label }} (seats {{ t.capacity }})
+                </option>
+
+              {% empty %}
+
+                <option disabled>
+                  No tables yet — run seed_demo_data
+                </option>
+
+              {% endfor %}
+
+            </select>
+          </div>
+
+        </div>
+
+
+        <!-- Time Slots -->
+        <label class="form-label">
+          Choose a Time Slot
+        </label>
+
+        <div class="row g-2"
+             id="slotGrid">
+        </div>
+
+        <input type="hidden"
+               name="slot_start"
+               id="slotStartInput">
+
+        <input type="hidden"
+               name="slot_end"
+               id="slotEndInput">
+
+        <p class="slot-note mt-3">
+          🟩 Available time slots — pick one to continue
+        </p>
+
+
+        <!-- Confirm Booking -->
+        <button type="submit"
+                class="btn-brick mt-3"
+                id="confirmBookBtn">
+
+          Confirm Booking
+
+        </button>
+
+      </form>
+
+    </div>
+
+
+    <!-- =========================================================
+         RIGHT SIDE
+         ========================================================= -->
+    <div class="col-lg-5">
+
+      <!-- =======================================================
+           MY RECENT BOOKINGS
+           ======================================================= -->
+
+      {% if my_reservations %}
+
+        <h6 class="mb-3">
+          My Recent Bookings
+        </h6>
+
+        <div class="d-flex flex-column gap-2 mb-4">
+
+          {% for r in my_reservations %}
+
+            <div class="p-3"
+                 style="
+                   background:#fff;
+                   border:1px solid var(--line);
+                   border-radius:8px;
+                 ">
+
+              <!-- Reservation Header -->
+              <div class="d-flex justify-content-between align-items-center">
+
+                <strong>
+                  {{ r.table.label }}
+                </strong>
+
+
+                <!-- Reservation Status -->
+                {% if r.status == 'pending' %}
+
+                  <span class="badge"
+                        style="
+                          background:var(--turmeric);
+                          color:var(--ink);
+                        ">
+                    Pending
+                  </span>
+
+                {% elif r.status == 'confirmed' %}
+
+                  <span class="badge"
+                        style="background:var(--leaf);">
+                    Confirmed
+                  </span>
+
+                {% elif r.status == 'cancelled' %}
+
+                  <span class="badge"
+                        style="background:var(--ink-soft);">
+                    Cancelled
+                  </span>
+
+                {% else %}
+
+                  <span class="badge"
+                        style="background:var(--ink-soft);">
+                    {{ r.get_status_display }}
+                  </span>
+
+                {% endif %}
+
+              </div>
+
+
+              <!-- Reservation Details -->
+              <p class="small mb-0"
+                 style="color:var(--ink-soft);">
+
+                {{ r.date }}
+                &middot;
+                {{ r.slot_start|time:"g:i A" }}
+                &middot;
+                {{ r.party_size }} people
+
+              </p>
+
+
+              <!-- =================================================
+                   CUSTOMER CANCEL RESERVATION
+                   ================================================= -->
+
+              {% if r.status == 'pending' or r.status == 'confirmed' %}
+
+                <form method="post"
+                      action="{% url 'cancel_reservation' r.id %}"
+                      class="mt-2"
+                      onsubmit="return confirm('Are you sure you want to cancel this reservation?');">
+
+                  {% csrf_token %}
+
+                  <button type="submit"
+                          class="btn btn-sm btn-danger">
+
+                    Cancel Reservation
+
+                  </button>
+
+                </form>
+
+              {% endif %}
+
+            </div>
+
+          {% endfor %}
+
+        </div>
+
+      {% endif %}
+
+
+      <!-- =======================================================
+           NEED TO KNOW
+           ======================================================= -->
+
+      <div class="p-4"
+           style="
+             background:var(--ink);
+             color:var(--paper);
+             border-radius:10px;
+           ">
+
+        <h6 style="color:var(--turmeric);">
+          Need to know
+        </h6>
+
+        <ul class="small ps-3 mb-0"
+            style="color:var(--paper-dim);">
+
+          <li class="mb-2">
+            Bookings are confirmed by our staff,
+            usually within a few minutes.
+          </li>
+
+          <li class="mb-2">
+            You'll see the status change to
+            <strong>Confirmed</strong>
+            right here once it's approved.
+          </li>
+
+          <li>
+            We'll also email you when your table is confirmed.
+          </li>
+
+        </ul>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+// ================================================================
+// DEMO TIME SLOT OPTIONS
+// ================================================================
+
+const slots = [
+
+  {
+    label: "12:00 - 2:00 PM",
+    start: "12:00",
+    end: "14:00"
+  },
+
+  {
+    label: "2:00 - 4:00 PM",
+    start: "14:00",
+    end: "16:00"
+  },
+
+  {
+    label: "4:00 - 6:00 PM",
+    start: "16:00",
+    end: "18:00"
+  },
+
+  {
+    label: "6:00 - 8:00 PM",
+    start: "18:00",
+    end: "20:00"
+  },
+
+  {
+    label: "8:00 - 10:00 PM",
+    start: "20:00",
+    end: "22:00"
+  },
+
+  {
+    label: "10:00 - 11:00 PM",
+    start: "22:00",
+    end: "23:00"
+  }
+
+];
+
+
+// ================================================================
+// CREATE TIME SLOT BUTTONS
+// ================================================================
+
+const grid = document.getElementById("slotGrid");
+
+slots.forEach((s) => {
+
+  const col = document.createElement("div");
+
+  col.className = "col-4 col-md-4";
+
+
+  const btn = document.createElement("div");
+
+  btn.className = "slot-btn available";
+
+  btn.textContent = s.label;
+
+
+  btn.onclick = () => {
+
+    // Remove previous selection
+    document
+      .querySelectorAll(".slot-btn")
+      .forEach((b) => {
+        b.classList.remove("selected");
+      });
+
+
+    // Select current slot
+    btn.classList.add("selected");
+
+
+    // Store selected time
+    document.getElementById("slotStartInput").value = s.start;
+
+    document.getElementById("slotEndInput").value = s.end;
+
+  };
+
+
+  col.appendChild(btn);
+
+  grid.appendChild(col);
+
+});
+
+
+// ================================================================
+// BOOKING FORM VALIDATION
+// ================================================================
+
+document
+  .getElementById("bookingForm")
+  .addEventListener("submit", (e) => {
+
+    const startTime =
+      document.getElementById("slotStartInput").value;
+
+
+    if (!startTime) {
+
+      e.preventDefault();
+
+      alert("Please select a time slot first.");
+
+    }
+
+  });
+
+</script>
+
+{% endblock %}

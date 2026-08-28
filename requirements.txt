@@ -1,0 +1,5 @@
+Django==4.2.30
+PyMySQL==1.1.2
+groq==1.6.0
+python-dotenv==1.0.1
+Pillow==12.1.1

@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}DineSmart — Admin Dashboard{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+  <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+    <div>
+      <span class="section-eyebrow">Admin Dashboard</span>
+      <h2 class="mb-0">Welcome, {{ user.first_name|default:user.username }}</h2>
+    </div>
+    <a href="{% url 'logout' %}" class="btn-outline-ink">Logout</a>
+  </div>
+
+  <!-- ===================== ORDERS ===================== -->
+  <h4 class="mb-3">🧾 Pending Orders <span class="badge" style="background:var(--brick);">{{ pending_orders|length }}</span></h4>
+  <div class="row g-3 mb-5">
+    {% for order in pending_orders %}
+      <div class="col-md-6 col-lg-4">
+        <div class="ticket-edge p-3" style="border:1px solid var(--line);border-radius:10px;">
+          <div class="d-flex justify-content-between mb-2">
+            <strong>Order #DS-{{ order.id }}</strong>
+            <span class="small" style="color:var(--ink-soft);">{{ order.created_at|timesince }} ago</span>
+          </div>
+          <p class="small mb-1" style="color:var(--ink-soft);">{{ order.customer.first_name|default:order.customer.username }} &middot; {{ order.get_payment_method_display }}</p>
+          <ul class="small ps-3 mb-2">
+            {% for line in order.items.all %}
+              <li>{{ line.menu_item.name }} x{{ line.quantity }}</li>
+            {% endfor %}
+          </ul>
+          <p class="fw-bold mb-3">Tk {{ order.total|floatformat:0 }}</p>
+          <div class="d-flex gap-2">
+            <form method="post" action="{% url 'staff_update_order' order.id 'preparing' %}" class="flex-fill">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm w-100" style="background:var(--leaf);color:#fff;border:none;">✔ Accept</button>
+            </form>
+            <form method="post" action="{% url 'staff_update_order' order.id 'cancelled' %}" class="flex-fill">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-ink w-100">✕ Reject</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p style="color:var(--ink-soft);">No pending orders right now.</p>
+    {% endfor %}
+  </div>
+
+  <h4 class="mb-3">👨‍🍳 In Progress</h4>
+  <div class="row g-3 mb-5">
+    {% for order in active_orders %}
+      <div class="col-md-6 col-lg-4">
+        <div class="p-3" style="border:1px solid var(--line);border-radius:10px;">
+          <div class="d-flex justify-content-between mb-2">
+            <strong>Order #DS-{{ order.id }}</strong>
+            <span class="badge" style="background:var(--turmeric);color:var(--ink);">{{ order.get_status_display }}</span>
+          </div>
+          <p class="small mb-2" style="color:var(--ink-soft);">{{ order.customer.first_name|default:order.customer.username }} &middot; Tk {{ order.total|floatformat:0 }}</p>
+          <div class="d-flex gap-2">
+            {% if order.status == 'preparing' %}
+              <form method="post" action="{% url 'staff_update_order' order.id 'ready' %}" class="flex-fill">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-brick w-100">Mark Ready</button>
+              </form>
+            {% elif order.status == 'ready' %}
+              <form method="post" action="{% url 'staff_update_order' order.id 'delivered' %}" class="flex-fill">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm w-100" style="background:var(--leaf);color:#fff;border:none;">Mark Delivered</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p style="color:var(--ink-soft);">Nothing in the kitchen right now.</p>
+    {% endfor %}
+  </div>
+
+  <!-- ===================== RESERVATIONS ===================== -->
+  <h4 class="mb-3">📅 Pending Table Bookings <span class="badge" style="background:var(--brick);">{{ pending_reservations|length }}</span></h4>
+  <div class="row g-3 mb-5">
+    {% for r in pending_reservations %}
+      <div class="col-md-6 col-lg-4">
+        <div class="ticket-edge p-3" style="border:1px solid var(--line);border-radius:10px;">
+          <strong>{{ r.table.label }}</strong>
+          <p class="small mb-1" style="color:var(--ink-soft);">{{ r.customer.first_name|default:r.customer.username }} &middot; {{ r.party_size }} people</p>
+          <p class="small mb-3">{{ r.date }} &middot; {{ r.slot_start|time:"g:i A" }} – {{ r.slot_end|time:"g:i A" }}</p>
+          <div class="d-flex gap-2">
+            <form method="post" action="{% url 'staff_update_reservation' r.id 'confirmed' %}" class="flex-fill">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm w-100" style="background:var(--leaf);color:#fff;border:none;">✔ Confirm</button>
+            </form>
+            <form method="post" action="{% url 'staff_update_reservation' r.id 'cancelled' %}" class="flex-fill">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-ink w-100">✕ Reject</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p style="color:var(--ink-soft);">No pending booking requests.</p>
+    {% endfor %}
+  </div>
+
+  <h4 class="mb-3">✅ Upcoming Confirmed Bookings</h4>
+  <div class="table-responsive">
+    <table class="table small">
+      <thead><tr><th>Table</th><th>Customer</th><th>Date</th><th>Time</th><th>Party</th></tr></thead>
+      <tbody>
+        {% for r in upcoming_reservations %}
+          <tr>
+            <td>{{ r.table.label }}</td>
+            <td>{{ r.customer.first_name|default:r.customer.username }}</td>
+            <td>{{ r.date }}</td>
+            <td>{{ r.slot_start|time:"g:i A" }}</td>
+            <td>{{ r.party_size }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" style="color:var(--ink-soft);">No upcoming confirmed bookings.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===================== MENU MANAGEMENT ===================== -->
+  <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
+    <h4 class="mb-0">🍽️ Menu Items</h4>
+    <a href="{% url 'admin_menu_add' %}" class="btn-brick btn-sm">+ Add New Item</a>
+  </div>
+  <div class="table-responsive mb-5">
+    <table class="table small align-middle">
+      <thead><tr><th>Photo</th><th>Name</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for m in menu_items %}
+          <tr>
+            <td><img src="{{ m.display_image }}" style="width:44px;height:44px;object-fit:cover;border-radius:6px;" onerror="this.style.visibility='hidden'"></td>
+            <td>{{ m.name }}</td>
+            <td>{{ m.category.name }}</td>
+            <td>Tk {{ m.price|floatformat:0 }}</td>
+            <td>
+              {% if m.is_available %}
+                <span class="badge" style="background:var(--leaf);">Available</span>
+              {% else %}
+                <span class="badge" style="background:var(--ink-soft);">Hidden</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'admin_menu_edit' m.id %}" class="btn btn-sm btn-outline-ink">Edit</a>
+              <form method="post" action="{% url 'admin_menu_delete' m.id %}" class="d-inline" onsubmit="return confirm('Delete {{ m.name|escapejs }}?');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-ink">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="6" style="color:var(--ink-soft);">No menu items yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

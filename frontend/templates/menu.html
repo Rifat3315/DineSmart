@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}DineSmart — Menu{% endblock %}
+{% block nav_menu %}active{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+  <span class="section-eyebrow">Full Menu</span>
+  <h2 class="mb-4">Our Menu</h2>
+
+  <div class="row g-3 align-items-center mb-4">
+    <div class="col-md-6">
+      <input type="text" id="searchBox" class="form-control" placeholder="Search dishes by name...">
+    </div>
+    <div class="col-md-6 d-flex gap-2 flex-wrap" id="catPills">
+      <button class="cat-pill active" data-cat="all">All</button>
+      {% for cat in categories %}
+        <button class="cat-pill" data-cat="{{ cat.name }}">{{ cat.name }}</button>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="row g-4" id="menuGrid">
+    {% for item in items %}
+      <div class="col-6 col-md-4 col-lg-3 menu-card-wrap" data-cat="{{ item.category.name }}" data-name="{{ item.name|lower }}">
+        <div class="dish-card">
+          <div class="img-wrap" style="background-image:url('{{ item.display_image }}');background-size:cover;background-position:center;color:transparent;">
+            {% if item.spice_level %}<span class="badge-spice" style="color:#fff;">{{ item.get_spice_level_display }}</span>{% endif %}
+          </div>
+          <div class="body">
+            <span class="cat-tag">{{ item.category.name }}</span>
+            <h5>{{ item.name }}</h5>
+            {% if item.review_count %}
+              <div class="small mb-1" style="color:var(--turmeric-deep);">
+                ★ {{ item.avg_rating|floatformat:1 }} <span style="color:var(--ink-soft);">({{ item.review_count }} review{{ item.review_count|pluralize }})</span>
+              </div>
+            {% else %}
+              <div class="small mb-1" style="color:var(--ink-soft);">No reviews yet</div>
+            {% endif %}
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <span class="price">Tk {{ item.price|floatformat:0 }}</span>
+              <form method="post" action="{% url 'add_to_cart' item.id %}" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{% url 'menu' %}">
+                <button type="submit" class="btn btn-sm btn-brick">+ Cart</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p style="color:var(--ink-soft);">No menu items yet. Run <code>python manage.py seed_demo_data</code> to add sample dishes.</p>
+    {% endfor %}
+  </div>
+  <p id="emptyState" class="text-center py-5 d-none" style="color:var(--ink-soft);">No items found.</p>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Category filter pills
+let activeCat = "all";
+document.querySelectorAll('.cat-pill').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    activeCat = btn.dataset.cat;
+    filterCards();
+  });
+});
+document.getElementById('searchBox').addEventListener('input', filterCards);
+
+function filterCards(){
+  const q = document.getElementById('searchBox').value.trim().toLowerCase();
+  let visible = 0;
+  document.querySelectorAll('.menu-card-wrap').forEach(card=>{
+    const matchesCat = activeCat === 'all' || card.dataset.cat === activeCat;
+    const matchesQuery = card.dataset.name.includes(q);
+    const show = matchesCat && matchesQuery;
+    card.classList.toggle('d-none', !show);
+    if(show) visible++;
+  });
+  document.getElementById('emptyState').classList.toggle('d-none', visible > 0);
+}
+</script>
+{% endblock %}

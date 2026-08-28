@@ -1,0 +1,695 @@
+/* =========================================================
+   DineSmart — Design Tokens
+   Navy & red palette, matching the approved site reference.
+   ========================================================= */
+:root{
+  --ink:        #003049;   /* deep navy */
+  --ink-soft:   #4A6578;
+  --paper:      #F5F5F5;   /* light neutral background */
+  --paper-dim:  #E9ECEF;
+  --turmeric:   #F77F00;   /* secondary accent (orange) */
+  --turmeric-deep:#D96C00;
+  --brick:      #D62828;   /* primary accent / CTA (red) */
+  --brick-deep: #B32121;
+  --leaf:       #28A745;   /* success / available */
+  --leaf-deep:  #1E7E34;
+  --line:       rgba(0,48,73,0.12);
+  --shadow:     0 12px 30px rgba(0,48,73,0.14);
+
+  --font-display: "Poppins", "Hind Siliguri", sans-serif;
+  --font-body:    "Poppins", "Hind Siliguri", sans-serif;
+
+  --radius-card: 10px;
+  --radius-pill: 30px;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:var(--paper);
+  margin:0;
+  -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3,h4,.font-display{
+  font-family:var(--font-display);
+  font-weight:600;
+  letter-spacing:-0.01em;
+  color:var(--ink);
+}
+
+a{color:inherit;text-decoration:none;}
+
+/* ---------- Signature element: the "tikka stamp" ----------
+   A circular seal-mark used as the brand signature, echoing the
+   wax-stamp seals used on Bangladeshi restaurant receipts/tokens. */
+.tikka-stamp{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:46px;height:46px;
+  border-radius:50%;
+  background:var(--brick);
+  color:var(--paper);
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:1.05rem;
+  flex-shrink:0;
+  box-shadow:0 0 0 3px var(--paper), 0 0 0 4px var(--brick);
+}
+
+/* ---------- Scalloped ticket edge (used on order/receipt cards) --------- */
+.ticket-edge{
+  position:relative;
+  background:var(--paper);
+}
+.ticket-edge::before{
+  content:"";
+  position:absolute;
+  left:0; right:0; top:-9px;
+  height:18px;
+  background-image: radial-gradient(circle at 9px 9px, transparent 9px, var(--ink) 10px);
+  background-size:18px 18px;
+  background-repeat:repeat-x;
+  background-position:center;
+  opacity:0.06;
+}
+
+/* ---------- Navbar ---------- */
+.ds-navbar{
+  background:var(--ink);
+  padding:.85rem 0;
+  border-bottom:3px solid var(--turmeric);
+}
+.ds-navbar .brand{
+  font-family:var(--font-display);
+  font-size:1.4rem;
+  color:var(--paper);
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+}
+.ds-navbar .brand small{
+  display:block;
+  font-family:var(--font-body);
+  font-size:.62rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--turmeric);
+  font-weight:600;
+}
+.ds-navbar .nav-link{
+  color:var(--paper-dim) !important;
+  font-weight:500;
+  margin:0 .35rem;
+  position:relative;
+}
+.ds-navbar .nav-link:hover,.ds-navbar .nav-link.active{color:var(--turmeric) !important;}
+.ds-navbar .btn-cart{
+  background:var(--turmeric);
+  color:var(--ink);
+  border:none;
+  font-weight:600;
+  border-radius:var(--radius-pill);
+  padding:.45rem 1rem;
+}
+.ds-navbar .btn-cart:hover{background:var(--turmeric-deep);color:var(--ink);}
+
+/* ---------- Buttons ---------- */
+.btn-brick{
+  background:var(--brick);
+  color:var(--paper);
+  border:none;
+  border-radius:var(--radius-pill);
+  padding:.65rem 1.6rem;
+  font-weight:600;
+  transition:transform .15s ease, background .15s ease;
+}
+.btn-brick:hover{background:var(--brick-deep);color:var(--paper);transform:translateY(-1px);}
+.btn-outline-ink{
+  border:1.5px solid var(--ink);
+  color:var(--ink);
+  background:transparent;
+  border-radius:var(--radius-pill);
+  padding:.6rem 1.5rem;
+  font-weight:600;
+}
+.btn-outline-ink:hover{background:var(--ink);color:var(--paper);}
+
+/* ---------- Hero ---------- */
+.hero{
+  background:var(--ink);
+  color:var(--paper);
+  position:relative;
+  overflow:hidden;
+  padding:5.5rem 0 6rem;
+}
+.hero::after{
+  content:"";
+  position:absolute;
+  right:-120px; top:-120px;
+  width:420px;height:420px;
+  border-radius:50%;
+  background:radial-gradient(circle, var(--turmeric) 0%, transparent 70%);
+  opacity:.18;
+}
+.hero .eyebrow{
+  color:var(--turmeric);
+  text-transform:uppercase;
+  letter-spacing:.18em;
+  font-size:.75rem;
+  font-weight:700;
+}
+.hero h1{
+  color:var(--paper);
+  font-size:clamp(2.2rem,4.5vw,3.6rem);
+  line-height:1.05;
+  margin:.6rem 0 1.2rem;
+}
+.hero p.lead{color:var(--paper-dim);font-size:1.08rem;max-width:520px;}
+
+/* ---------- Section labels ---------- */
+.section-eyebrow{
+  color:var(--brick);
+  text-transform:uppercase;
+  letter-spacing:.16em;
+  font-size:.72rem;
+  font-weight:700;
+  margin-bottom:.4rem;
+  display:block;
+}
+
+/* ---------- Dish cards ---------- */
+.dish-card{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:var(--radius-card);
+  overflow:hidden;
+  transition:box-shadow .2s ease, transform .2s ease;
+  height:100%;
+}
+.dish-card:hover{box-shadow:var(--shadow);transform:translateY(-3px);}
+.dish-card .img-wrap{
+  aspect-ratio:4/3;
+  background:linear-gradient(135deg,var(--paper-dim),#c9d6dd);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--turmeric-deep);
+  font-family:var(--font-display);
+  font-size:.85rem;
+  position:relative;
+}
+.dish-card .badge-spice{
+  position:absolute;top:.6rem;left:.6rem;
+  background:var(--brick);color:var(--paper);
+  font-size:.65rem;font-weight:700;
+  padding:.2rem .55rem;border-radius:var(--radius-pill);
+}
+.dish-card .body{padding:1rem 1.1rem 1.2rem;}
+.dish-card h5{font-size:1.05rem;margin-bottom:.25rem;}
+.dish-card .price{
+  font-family:var(--font-display);
+  color:var(--brick);
+  font-weight:700;
+  font-size:1.15rem;
+}
+.dish-card .cat-tag{
+  font-size:.7rem;
+  color:var(--ink-soft);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+/* ---------- Category filter pills ---------- */
+.cat-pill{
+  border:1.5px solid var(--line);
+  background:var(--paper);
+  color:var(--ink);
+  border-radius:var(--radius-pill);
+  padding:.4rem 1.1rem;
+  font-size:.85rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .15s ease;
+}
+.cat-pill.active,.cat-pill:hover{
+  background:var(--ink);
+  color:var(--paper);
+  border-color:var(--ink);
+}
+
+/* ---------- Time-slot picker (Parallel Seat Allocation UI) ---------- */
+.slot-btn{
+  border:1.5px solid var(--line);
+  background:var(--paper);
+  border-radius:var(--radius-card);
+  padding:.65rem .5rem;
+  text-align:center;
+  font-weight:600;
+  font-size:.85rem;
+  cursor:pointer;
+  transition:all .15s ease;
+}
+.slot-btn.available{border-color:var(--leaf);color:var(--leaf-deep);}
+.slot-btn.available:hover,.slot-btn.selected{background:var(--leaf);color:var(--paper);border-color:var(--leaf);}
+.slot-btn.full{
+  border-color:var(--line);
+  color:#8fa3b0;
+  background:repeating-linear-gradient(45deg,var(--paper-dim),var(--paper-dim) 4px,#d8dee2 4px,#d8dee2 8px);
+  cursor:not-allowed;
+}
+.slot-note{font-size:.72rem;color:var(--ink-soft);}
+
+/* ---------- Status tracker ---------- */
+.status-track{display:flex;justify-content:space-between;position:relative;margin:2rem 0 1rem;}
+.status-track::before{
+  content:"";position:absolute;top:14px;left:5%;right:5%;height:2px;background:var(--line);
+}
+.status-step{position:relative;text-align:center;flex:1;z-index:1;}
+.status-step .dot{
+  width:30px;height:30px;border-radius:50%;
+  background:var(--paper);border:2px solid var(--line);
+  margin:0 auto .5rem;display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;font-weight:700;color:var(--ink-soft);
+}
+.status-step.done .dot{background:var(--leaf);border-color:var(--leaf);color:var(--paper);}
+.status-step.active .dot{background:var(--turmeric);border-color:var(--turmeric);color:var(--ink);}
+.status-step small{display:block;font-size:.72rem;color:var(--ink-soft);}
+
+/* ---------- Auth cards ---------- */
+.auth-card{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:var(--radius-card);
+  box-shadow:var(--shadow);
+  padding:2.5rem 2.2rem;
+}
+.form-control, .form-select{
+  border-radius:4px;
+  border:1.5px solid var(--line);
+  padding:.6rem .8rem;
+}
+.form-control:focus,.form-select:focus{
+  border-color:var(--turmeric);
+  box-shadow:0 0 0 3px rgba(217,158,43,.2);
+}
+label.form-label{font-weight:600;font-size:.85rem;}
+
+/* ---------- Chatbot floating widget ---------- */
+/* ================================
+   DineSmart AI Chatbot
+================================ */
+
+/* Floating button + AI label */
+.chat-fab-wrapper{
+    position:fixed;
+    right:1.5rem;
+    bottom:1.5rem;
+    z-index:1000;
+
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:.45rem;
+}
+
+
+/* DineSmart AI label */
+.chat-ai-label{
+    background:var(--paper);
+    color:var(--ink);
+
+    padding:.4rem .7rem;
+
+    border-radius:999px;
+
+    font-size:.72rem;
+    font-weight:700;
+
+    box-shadow:0 5px 16px rgba(0,0,0,.12);
+
+    border:1px solid var(--line);
+
+    display:flex;
+    align-items:center;
+    gap:.4rem;
+
+    white-space:nowrap;
+}
+
+
+/* Green online dot */
+.ai-dot{
+    width:7px;
+    height:7px;
+
+    border-radius:50%;
+
+    background:#22c55e;
+
+    display:inline-block;
+}
+
+
+/* AI floating button */
+.chat-fab{
+    width:60px;
+    height:60px;
+
+    border-radius:50%;
+
+    background:var(--brick);
+    color:var(--paper);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border:none;
+
+    font-size:1.55rem;
+
+    cursor:pointer;
+
+    box-shadow:0 10px 24px rgba(150,40,27,.35);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+/* Hover effect */
+.chat-fab:hover{
+    transform:scale(1.08);
+
+    box-shadow:
+        0 12px 28px rgba(150,40,27,.45);
+}
+/* Chat window */
+.chat-panel{
+    position:fixed;
+
+    right:1.5rem;
+    bottom:6.8rem;
+
+    width:340px;
+    max-width:88vw;
+
+    height:440px;
+
+    background:var(--paper);
+
+    border-radius:12px;
+
+    box-shadow:var(--shadow);
+
+    border:1px solid var(--line);
+
+    display:none;
+
+    flex-direction:column;
+
+    overflow:hidden;
+
+    z-index:1000;
+}
+
+
+/* When chatbot is opened */
+.chat-panel.open{
+    display:flex;
+}
+/* Chat header */
+.chat-head{
+    background:var(--ink);
+
+    color:var(--paper);
+
+    padding:.85rem 1rem;
+
+    font-family:var(--font-display);
+}
+
+
+/* AI title */
+.chat-title{
+    display:flex;
+
+    align-items:center;
+
+    gap:.65rem;
+}
+
+
+/* Robot icon */
+.chat-ai-icon{
+    width:38px;
+    height:38px;
+
+    border-radius:50%;
+
+    background:var(--turmeric);
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    font-size:1.2rem;
+}
+
+
+/* Title */
+.chat-title strong{
+    display:block;
+
+    font-size:1rem;
+}
+
+
+/* Subtitle */
+.chat-title small{
+    color:var(--turmeric);
+
+    display:block;
+
+    font-size:.7rem;
+
+    margin-top:.1rem;
+}
+
+
+/* Online status */
+.chat-status{
+    margin-top:.5rem;
+
+    font-size:.68rem;
+
+    color:#d9e1e5;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:.35rem;
+}
+
+
+/* Online green dot */
+.status-dot{
+    width:7px;
+    height:7px;
+
+    border-radius:50%;
+
+    background:#22c55e;
+
+    display:inline-block;
+}
+/* Chat messages area */
+.chat-body{
+    flex:1;
+
+    padding:.9rem;
+
+    overflow-y:auto;
+
+    font-size:.88rem;
+}
+
+
+/* Common message */
+.chat-msg{
+    margin-bottom:.7rem;
+
+    max-width:85%;
+
+    padding:.5rem .75rem;
+
+    border-radius:10px;
+}
+
+
+/* AI message */
+.chat-msg.bot{
+    background:var(--paper-dim);
+}
+
+
+/* User message */
+.chat-msg.user{
+    background:var(--turmeric);
+
+    margin-left:auto;
+
+    color:var(--ink);
+}
+/* Chat input */
+.chat-input{
+    display:flex;
+
+    border-top:1px solid var(--line);
+}
+
+
+/* Input box */
+.chat-input input{
+    flex:1;
+
+    border:none;
+
+    padding:.7rem;
+
+    background:transparent;
+
+    font-family:var(--font-body);
+}
+
+
+/* Remove input outline */
+.chat-input input:focus{
+    outline:none;
+}
+
+
+/* Send button */
+.chat-input button{
+    border:none;
+
+    background:var(--brick);
+
+    color:var(--paper);
+
+    padding:0 1rem;
+
+    cursor:pointer;
+}
+.chat-panel.open{display:flex;}
+.chat-head{background:var(--ink);color:var(--paper);padding:.9rem 1rem;font-family:var(--font-display);}
+.chat-head small{color:var(--turmeric);display:block;font-size:.7rem;}
+.chat-body{flex:1;padding:.9rem;overflow-y:auto;font-size:.88rem;}
+.chat-msg{margin-bottom:.7rem;max-width:85%;padding:.5rem .75rem;border-radius:10px;}
+.chat-msg.bot{background:var(--paper-dim);}
+.chat-msg.user{background:var(--turmeric);margin-left:auto;color:var(--ink);}
+.chat-input{display:flex;border-top:1px solid var(--line);}
+.chat-input input{flex:1;border:none;padding:.7rem;background:transparent;font-family:var(--font-body);}
+.chat-input input:focus{outline:none;}
+.chat-input button{border:none;background:var(--brick);color:var(--paper);padding:0 1rem;}
+
+/* ---------- Footer ---------- */
+.ds-footer{background:var(--ink);color:var(--paper-dim);padding:3rem 0 1.5rem;margin-top:5rem;}
+.ds-footer h6{color:var(--turmeric);text-transform:uppercase;font-size:.75rem;letter-spacing:.12em;}
+.ds-footer a{color:var(--paper-dim);}
+.ds-footer a:hover{color:var(--turmeric);}
+.ds-footer hr{border-color:var(--ink-soft);margin:2rem 0 1rem;}
+
+/* ---------- Utility ---------- */
+.divider-stamp{display:flex;align-items:center;gap:1rem;margin:.5rem 0 2rem;}
+.divider-stamp .rule{flex:1;height:1px;background:var(--line);}
+
+@media (max-width: 576px){
+  .hero{padding:3.5rem 0 4rem;text-align:center;}
+  .hero p.lead{margin:0 auto;}
+}
+/* ================================
+   Mobile Chatbot
+================================ */
+
+@media (max-width:576px){
+
+    .chat-fab-wrapper{
+        right:1rem;
+        bottom:1rem;
+    }
+
+    .chat-panel{
+        right:1rem;
+
+        bottom:6.2rem;
+
+        width:calc(100vw - 2rem);
+
+        max-width:none;
+
+        height:70vh;
+    }
+
+}
+/* Footer Admin Login */
+.footer-admin{
+    display:flex;
+    align-items:flex-start;
+    justify-content:flex-end;
+    padding-top:2rem;
+}
+
+.footer-admin a{
+    color:var(--paper);
+    text-decoration:none;
+    white-space:nowrap;
+}
+
+.footer-admin a:hover{
+    text-decoration:underline;
+}
+
+
+/* Center Copyright */
+.footer-bottom{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:1rem 0;
+}
+
+.footer-bottom span{
+    text-align:center;
+}
+@media (max-width:768px){
+
+    .footer-admin{
+        justify-content:flex-start;
+        padding-top:0;
+    }
+
+    .footer-bottom{
+        justify-content:center;
+        text-align:center;
+    }
+
+}
+.dinesmart-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+.auth-logo {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}

@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% load dinesmart_extras %}
+{% block title %}DineSmart — Order Tracking{% endblock %}
+{% block nav_orders %}active{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+  <span class="section-eyebrow">Live Status</span>
+  <h2 class="mb-4">Order Tracking</h2>
+
+  {% if orders %}
+  <div class="d-flex flex-column gap-4">
+    {% for order in orders %}
+      <div class="row">
+        <div class="col-lg-7">
+          <div class="ticket-edge p-4" style="border:1px solid var(--line);border-radius:10px;">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <span class="cat-tag">Order #DS-{{ order.id }} &middot; {{ order.created_at|date:"M j, g:i A" }}</span>
+                <h5 class="mb-0">{{ order.items.count }} item{{ order.items.count|pluralize }} &middot; Tk {{ order.total|floatformat:0 }}</h5>
+              </div>
+              {% if order.status == 'cancelled' %}
+                <span class="badge" style="background:var(--brick);">{{ order.get_status_display }}</span>
+              {% else %}
+                <span class="badge" style="background:var(--turmeric);color:var(--ink);">{{ order.get_status_display }}</span>
+              {% endif %}
+            </div>
+
+            {% if order.status != 'cancelled' %}
+            <div class="status-track">
+              <div class="status-step done"><div class="dot">✓</div><small>Pending</small></div>
+              <div class="status-step {% if order.status == 'preparing' %}active{% elif order.status == 'ready' or order.status == 'delivered' %}done{% endif %}"><div class="dot">2</div><small>Preparing</small></div>
+              <div class="status-step {% if order.status == 'ready' %}active{% elif order.status == 'delivered' %}done{% endif %}"><div class="dot">3</div><small>Ready</small></div>
+              <div class="status-step {% if order.status == 'delivered' %}done{% endif %}"><div class="dot">4</div><small>Delivered</small></div>
+            </div>
+            {% endif %}
+
+            <hr>
+                       <div class="small">
+              {% for line in order.items.all %}
+                <div class="d-flex justify-content-between mb-1">
+                  <span>{{ line.menu_item.name }} x{{ line.quantity }}</span>
+                  <span>Tk {{ line.line_total|floatformat:0 }}</span>
+                </div>
+              {% endfor %}
+
+              <div class="d-flex justify-content-between mb-1">
+                <span>Delivery Fee</span>
+                <span>Tk {{ order.delivery_fee|floatformat:0 }}</span>
+              </div>
+
+              <div class="d-flex justify-content-between mb-1">
+                <span>Payment</span>
+                <span>
+                  {{ order.get_payment_method_display }}
+
+                  {% if order.is_paid %}
+                    <span style="color:var(--leaf-deep);">
+                      — Paid
+                      {% if order.transaction_id %}
+                        ({{ order.transaction_id }})
+                      {% endif %}
+                    </span>
+                  {% else %}
+                    <span style="color:var(--ink-soft);">
+                      — Pending
+                    </span>
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+
+
+            <!-- CUSTOMER CANCEL ORDER -->
+            {% if order.status == 'pending' %}
+              <hr>
+
+              <form method="post"
+                    action="{% url 'cancel_order' order.id %}"
+                    onsubmit="return confirm('Are you sure you want to cancel Order #DS-{{ order.id }}?');">
+
+                {% csrf_token %}
+
+                <button type="submit"
+                        class="btn btn-sm btn-danger">
+                  Cancel Order
+                </button>
+
+              </form>
+            {% endif %}
+
+
+            {% if order.status == 'delivered' %}
+              <hr>
+              <h6 class="mb-3">Rate your dishes</h6>
+              {% for line in order.items.all %}
+                <div class="mb-3 p-3" style="background:var(--paper-dim);border-radius:8px;">
+                  {% if line.menu_item.id in reviewed_item_ids %}
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="small fw-bold">{{ line.menu_item.name }}</span>
+                      <span class="small d-flex align-items-center gap-2" style="color:var(--leaf-deep);">
+                        ✓ Reviewed — thank you!
+                        <form method="post" action="{% url 'delete_review' my_reviews|get_item:line.menu_item.id %}" onsubmit="return confirm('Remove your review for {{ line.menu_item.name }}?');">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-outline-ink" style="padding:.1rem .5rem;">Delete</button>
+                        </form>
+                      </span>
+                    </div>
+                  {% else %}
+                    <form method="post" action="{% url 'submit_review' %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="menu_item_id" value="{{ line.menu_item.id }}">
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small fw-bold">{{ line.menu_item.name }}</span>
+                        <select name="rating" class="form-select form-select-sm" style="width:auto;" required>
+                          <option value="">Rate...</option>
+                          <option value="5">★★★★★ (5)</option>
+                          <option value="4">★★★★ (4)</option>
+                          <option value="3">★★★ (3)</option>
+                          <option value="2">★★ (2)</option>
+                          <option value="1">★ (1)</option>
+                        </select>
+                      </div>
+                      <div class="d-flex gap-2">
+                        <input type="text" name="comment" class="form-control form-control-sm" placeholder="Say something about this dish (optional)">
+                        <button type="submit" class="btn btn-sm btn-brick">Submit</button>
+                      </div>
+                    </form>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+
+        {% if forloop.first %}
+        <div class="col-lg-5">
+         <!--<p style="color:var(--ink-soft);">Status is updated by staff from the Admin Dashboard — reload this page to see the latest.</p> --> 
+          <p class="small">Have a question about your order? Ask the AI chatbot in the bottom-right corner — it will fetch order status directly from the database.</p>
+        </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <p style="color:var(--ink-soft);">
+      {% if user.is_authenticated %}
+        You don't have any orders yet. <a href="{% url 'menu' %}">Browse the menu</a> to place one.
+      {% else %}
+        <a href="{% url 'login' %}">Login</a> to see your order status.
+      {% endif %}
+    </p>
+  {% endif %}
+</section>
+{% endblock %}

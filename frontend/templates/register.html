@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}DineSmart — Register{% endblock %}
+
+{% block content %}
+<section class="container py-5" style="max-width:500px;">
+
+  <div class="text-center mb-4">
+    <img src="{% static 'img/dinesmart-logo-icon.png' %}"
+         alt="DineSmart Logo"
+         class="auth-logo">
+
+    <h2 class="mt-3">Create Account</h2>
+
+    <p style="color:var(--ink-soft);">
+      Join DineSmart to start ordering and booking
+    </p>
+  </div>
+
+  <div class="auth-card">
+    <form method="post" action="{% url 'register' %}">
+      {% csrf_token %}
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label">Full Name</label>
+          <input type="text" name="full_name" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" name="phone" class="form-control" placeholder="01XXXXXXXXX" required>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" required>
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" name="password2" class="form-control" required>
+        </div>
+      </div>
+      <button type="submit" class="btn-brick w-100">Register</button>
+    </form>
+    <p class="text-center small mt-3 mb-0">Already have an account? <a href="{% url 'login' %}" style="color:var(--brick);font-weight:600;">Login</a></p>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}DineSmart — Home{% endblock %}
+{% block nav_home %}active{% endblock %}
+
+{% block content %}
+
+<section class="hero" style="background:linear-gradient(rgba(0,48,73,0.75),rgba(0,48,73,0.75)), url('https://img.p.mapq.st/?q=75&url=https%3A%2F%2Fmedia-cdn.tripadvisor.com%2Fmedia%2Fphoto-o%2F1c%2Fa3%2F6c%2F4e%2Fstandard-cozy-seating.jpg&w=3840') center/cover;">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <span class="eyebrow">Restaurant &middot; E-Commerce &middot; AI</span>
+        <h1>Taste of home,<br>one click away.</h1>
+        <p class="lead">Browse the menu, book a table with zero double-booking, and ask our AI chatbot anything — in Bangla or English.</p>
+        <div class="d-flex gap-3 mt-4 flex-wrap">
+          <a href="{% url 'menu' %}" class="btn-brick">View Menu</a>
+          <a href="{% url 'reservation' %}" class="btn-outline-ink" style="border-color:#FBF3E7;color:#FBF3E7;">Book a Table</a>
+        </div>
+      </div>
+      <div class="col-lg-5 d-none d-lg-block text-center">
+        <div class="ticket-edge p-4" style="border-radius:10px;">
+          <div class="p-3" style="background:#fff;border-radius:6px;overflow:hidden;">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSElfTNKdFzp5Yo-TAatm32Mu8mwna9jlIOMMtqLFicuBWJYz6mjDaVTVc&s=10" alt="Kacchi Biryani" style="width:100%;height:170px;object-fit:cover;border-radius:4px;">
+            <!--<span class="cat-tag d-block mt-3">Today&rsquo;s Special</span>-->
+            <h3 class="mb-1">Kacchi Biryani</h3>
+           <!-- <span class="price">Tk 350</span> -->
+            <p class="small mt-2 mb-0" style="color:var(--ink-soft);">Today&rsquo;s Special</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container py-5">
+  <div class="section-title text-center mb-4">
+    <span class="section-eyebrow">What We Offer</span>
+    <h2>Our Services</h2>
+  </div>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="dish-card h-100">
+        <div class="img-wrap" style="width:100%;height:200px;background-image:url('https://img.magnific.com/free-photo/people-taking-photos-food_23-2149303524.jpg?semt=ais_hybrid&w=740&q=80');background-size:cover;background-position:center;"></div>
+        <div class="body">
+          <h5>Online Order</h5>
+          <p class="small" style="color:var(--ink-soft);">Browse our complete menu, customize your order, and place orders directly through our website.</p>
+          <a href="{% url 'menu' %}" class="btn btn-sm btn-brick">Order Now</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="dish-card h-100">
+        <div class="img-wrap" style="width:100%;height:200px;background-image:url('https://plus.unsplash.com/premium_photo-1726768851067-0e8223af8c67?q=80&w=797&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');background-size:cover;background-position:center;"></div>
+        <div class="body">
+          <h5>Table Booking</h5>
+          <p class="small" style="color:var(--ink-soft);">Reserve your preferred table for any occasion. Select date, time, and number of guests through our easy booking system.</p>
+          <a href="{% url 'reservation' %}" class="btn btn-sm btn-brick">Book Now</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="dish-card h-100">
+        <div class="img-wrap" style="width:100%;height:200px;background-image:url('https://plus.unsplash.com/premium_photo-1664474653221-8412b8dfca3e?q=80&w=869&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');background-size:cover;background-position:center;"></div>
+        <div class="body">
+          <h5>Special Events</h5>
+          <p class="small" style="color:var(--ink-soft);">Host your special events with us. We offer customized menus and dedicated service for birthdays, anniversaries, and corporate events.</p>
+          <a href="{% url 'reservation' %}" class="btn btn-sm btn-brick">Plan Event</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container py-4">
+  <div class="d-flex justify-content-between align-items-end mb-3 flex-wrap">
+    <div>
+      <span class="section-eyebrow">Chef&rsquo;s Picks</span>
+      <h2>Popular Dishes</h2>
+    </div>
+    <a href="{% url 'menu' %}" class="btn-outline-ink">View All</a>
+  </div>
+
+  <div class="row g-4">
+    {% for item in featured %}
+      <div class="col-6 col-md-3">
+        <div class="dish-card">
+          <div class="img-wrap" style="background-image:url('{{ item.display_image }}');background-size:cover;background-position:center;color:transparent;">
+            {% if item.spice_level %}<span class="badge-spice" style="color:#fff;">{{ item.get_spice_level_display }}</span>{% endif %}
+          </div>
+          <div class="body">
+            <span class="cat-tag">{{ item.category.name }}</span>
+            <h5>{{ item.name }}</h5>
+            <span class="price">Tk {{ item.price|floatformat:0 }}</span>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p style="color:var(--ink-soft);">Our menu is being updated — please check back shortly.</p>
+    {% endfor %}
+  </div>
+</section>
+
+{% if recent_reviews %}
+<section class="container py-5">
+  <div class="section-title text-center mb-4">
+    <span class="section-eyebrow">What People Say</span>
+    <h2>Customer Reviews</h2>
+  </div>
+  <div class="row g-4">
+    {% for r in recent_reviews %}
+      <div class="col-md-6 col-lg-4">
+        <div class="p-4 h-100" style="background:#fff;border:1px solid var(--line);border-radius:var(--radius-card);box-shadow:0 3px 10px rgba(0,48,73,0.05);">
+          <div class="d-flex align-items-center mb-3">
+            <div class="d-flex align-items-center justify-content-center me-3" style="width:46px;height:46px;border-radius:50%;background:var(--brick);color:#fff;font-weight:700;">
+              {{ r.customer.first_name|default:r.customer.username|first|upper }}
+            </div>
+            <div>
+              <div class="fw-bold" style="color:var(--ink);">{{ r.customer.first_name|default:r.customer.username }}</div>
+              <div class="small" style="color:var(--ink-soft);">{{ r.created_at|date:"M j, Y" }}</div>
+            </div>
+          </div>
+          <div class="mb-2" style="color:var(--turmeric);font-size:1.1rem;">
+            {% for i in "12345" %}{% if forloop.counter <= r.rating %}★{% else %}☆{% endif %}{% endfor %}
+          </div>
+          <p class="small mb-1" style="color:var(--ink-soft);">On <strong>{{ r.menu_item.name }}</strong></p>
+          {% if r.comment %}<p class="mb-0" style="color:var(--ink);">{{ r.comment }}</p>{% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

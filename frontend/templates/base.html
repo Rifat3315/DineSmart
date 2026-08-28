@@ -1,0 +1,222 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}DineSmart — Bangladeshi Restaurant & Online Ordering{% endblock %}</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% block extra_css %}{% endblock %}
+</head>
+<body>
+{% csrf_token %}
+
+<nav class="ds-navbar">
+  <div class="container d-flex align-items-center justify-content-between flex-wrap">
+    <a href="{% url 'home' %}" class="brand">
+    <img
+        src="{% static 'img/dinesmart-logo-icon.png' %}"
+        alt="DineSmart Logo"
+        class="dinesmart-logo"
+    >
+
+    <span>
+        DineSmart
+        <small>Taste of home, delivered online</small>
+    </span>
+</a>
+    <button class="navbar-toggler d-lg-none border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#dsNav">
+      <span style="font-size:1.5rem;color:#FBF3E7;">&#9776;</span>
+    </button>
+    <div class="collapse navbar-collapse d-lg-flex justify-content-end" id="dsNav">
+      <ul class="navbar-nav d-flex flex-row flex-wrap gap-2 align-items-center mb-0">
+        <li class="nav-item"><a class="nav-link {% block nav_home %}{% endblock %}" href="{% url 'home' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link {% block nav_menu %}{% endblock %}" href="{% url 'menu' %}">Menu</a></li>
+        <li class="nav-item"><a class="nav-link {% block nav_reserve %}{% endblock %}" href="{% url 'reservation' %}">Table Booking</a></li>
+        <li class="nav-item"><a class="nav-link {% block nav_orders %}{% endblock %}" href="{% url 'order_tracking' %}">Order Tracking</a></li>
+        {% if user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link {% block nav_login %}{% endblock %}" href="{% url 'login' %}">Login</a></li>
+        {% endif %}
+        <li class="nav-item">
+          <a href="{% url 'cart' %}" class="btn-cart d-inline-flex align-items-center gap-2">
+            🛒 Cart <span class="badge bg-dark" id="cartCount">{{ cart_count|default:0 }}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main>
+{% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% else %}alert-info{% endif %} py-2">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+{% block content %}{% endblock %}
+</main>
+
+<footer class="ds-footer">
+  <div class="container">
+    <div class="row g-4">
+
+  <!-- DineSmart Brand -->
+  <div class="col-md-3">
+    <div class="brand mb-2">
+    <img
+        src="{% static 'img/dinesmart-logo-icon.png' %}"
+        alt="DineSmart Logo"
+        class="dinesmart-logo"
+    >
+
+    <span style="color:#FBF3E7;">
+        DineSmart
+    </span>
+</div>
+
+    <p class="small">
+      AI-powered restaurant management and online food ordering system,
+      built for Bangladeshi cuisine.
+    </p>
+  </div>
+
+
+  <!-- Explore -->
+  <div class="col-md-2">
+    <h6>Explore</h6>
+
+    <ul class="list-unstyled small">
+      <li><a href="{% url 'menu' %}">Menu</a></li>
+      <li><a href="{% url 'reservation' %}">Table Booking</a></li>
+      <li><a href="{% url 'order_tracking' %}">Order Tracking</a></li>
+    </ul>
+  </div>
+
+
+  <!-- Account -->
+  <div class="col-md-2">
+    <h6>Account</h6>
+
+    <ul class="list-unstyled small">
+      <li><a href="{% url 'login' %}">Login</a></li>
+      <li><a href="{% url 'register' %}">Register</a></li>
+    </ul>
+  </div>
+
+
+  <!-- Contact -->
+  <div class="col-md-3">
+    <h6>Contact</h6>
+
+    <p class="small mb-0">
+      Dhaka, Bangladesh<br>
+      dinesmart@gmail.com<br>
+      +880 1760-698749
+    </p>
+  </div>
+
+
+  <!-- Admin -->
+  <div class="col-md-2 footer-admin">
+    {% if user.is_staff %}
+      <a href="{% url 'staff_dashboard' %}">
+        Staff Dashboard
+      </a>
+    {% else %}
+      <a href="{% url 'staff_login' %}">
+        Staff Login
+      </a>
+    {% endif %}
+  </div>
+</div>
+    <div class="footer-bottom small">
+  <span>&copy; 2026 DineSmart. All rights reserved.</span>
+</div>
+</footer>
+
+<!-- AI Chatbot widget shell (wired to backend later via /chatbot/ask/) -->
+<!-- AI Chatbot Floating Button -->
+<div class="chat-fab-wrapper">
+    <div class="chat-ai-label">
+        <span class="ai-dot"></span>
+        DineSmart AI
+    </div>
+    <button
+        class="chat-fab"
+        id="chatFab"
+        aria-label="Open DineSmart AI Chatbot"
+    >
+        🤖
+    </button>
+</div>
+<!-- AI Chatbot Panel -->
+<div class="chat-panel" id="chatPanel">
+
+    <!-- Chat Header -->
+    <div class="chat-head">
+
+        <div class="chat-title">
+
+            <span class="chat-ai-icon">🤖</span>
+
+            <div>
+                <strong>DineSmart AI</strong>
+                <small>AI Restaurant Assistant</small>
+            </div>
+
+        </div>
+
+        <div class="chat-status">
+            <span class="status-dot"></span>
+            Online
+        </div>
+
+    </div>
+
+
+    <!-- Chat Messages -->
+    <div class="chat-body" id="chatBody">
+
+        <div class="chat-msg bot">
+            Hi! I'm DineSmart AI 🤖.
+            Ask me about our menu, orders, reservations, or bookings.
+        </div>
+
+    </div>
+
+
+    <!-- Chat Input -->
+    <form class="chat-input" id="chatForm">
+
+        <input
+            type="text"
+            id="chatInput"
+            placeholder="Ask DineSmart AI..."
+            autocomplete="off"
+        >
+
+        <button
+            type="submit"
+            aria-label="Send message"
+        >
+            ➤
+        </button>
+
+    </form>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

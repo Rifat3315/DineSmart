@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}DineSmart — Payment{% endblock %}
+
+{% block content %}
+<section class="container py-5" style="max-width:900px;">
+  <span class="section-eyebrow">Step 2 of 2</span>
+  <h2 class="mb-4">Complete Payment</h2>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      {% if order.payment_method == 'card' %}
+        <div class="auth-card">
+          <h5 class="mb-3">💳 Card Payment</h5>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="pay">
+            <div class="mb-3">
+              <label class="form-label">Card Number</label>
+              <input type="text" class="form-control" placeholder="4111 1111 1111 1111" maxlength="19" required>
+            </div>
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <label class="form-label">Expiry (MM/YY)</label>
+                <input type="text" class="form-control" placeholder="12/28" maxlength="5" required>
+              </div>
+              <div class="col-6">
+                <label class="form-label">CVV</label>
+                <input type="password" class="form-control" placeholder="123" maxlength="3" required>
+              </div>
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Cardholder Name</label>
+              <input type="text" class="form-control" placeholder="As printed on card" required>
+            </div>
+            <button type="submit" class="btn-brick w-100 mb-2">Pay Tk {{ order.total|floatformat:0 }}</button>
+            <button type="submit" name="action" value="cancel" formnovalidate class="btn btn-outline-ink w-100">Cancel</button>
+          </form>
+        </div>
+
+      {% else %}
+        <div class="auth-card" style="border-top:5px solid {{ brand.color }};">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="tikka-stamp" style="background:{{ brand.color }};">{{ brand.name|slice:":1" }}</span>
+            <h5 class="mb-0">{{ brand.name }} Payment</h5>
+          </div>
+          <p class="small" style="color:var(--ink-soft);">This is a simulated {{ brand.name }} checkout for demo purposes — no real money moves and no real {{ brand.name }} account is contacted.</p>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="pay">
+            <div class="mb-3">
+              <label class="form-label">{{ brand.name }} Account Number</label>
+              <input type="tel" class="form-control" placeholder="01XXXXXXXXX" pattern="01[0-9]{9}" maxlength="11" required>
+            </div>
+            <div class="mb-4">
+              <label class="form-label">PIN</label>
+              <input type="password" class="form-control" placeholder="Enter your PIN" maxlength="6" required>
+            </div>
+            <button type="submit" class="btn w-100 mb-2" style="background:{{ brand.color }};color:#fff;border:none;padding:.65rem;border-radius:999px;font-weight:600;">
+              Confirm & Pay Tk {{ order.total|floatformat:0 }}
+            </button>
+            <button type="submit" name="action" value="cancel" formnovalidate class="btn btn-outline-ink w-100">Cancel</button>
+          </form>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="col-lg-5">
+      <div class="ticket-edge p-4" style="border:1px solid var(--line);border-radius:10px;">
+        <h6 class="mb-3">Order #DS-{{ order.id }} Summary</h6>
+        {% for line in order.items.all %}
+          <div class="d-flex justify-content-between small mb-1">
+            <span>{{ line.menu_item.name }} x{{ line.quantity }}</span><span>Tk {{ line.line_total|floatformat:0 }}</span>
+          </div>
+        {% endfor %}
+        <div class="d-flex justify-content-between small mb-2"><span>Delivery Fee</span><span>Tk {{ order.delivery_fee|floatformat:0 }}</span></div>
+        <hr>
+        <div class="d-flex justify-content-between fw-bold"><span>Total</span><span>Tk {{ order.total|floatformat:0 }}</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
