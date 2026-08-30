@@ -53,6 +53,7 @@ class MenuItem(models.Model):
 # Orders
 # ---------------------------------------------------------------
 class Order(models.Model):
+
     STATUS_CHOICES = [
         ("pending", "Pending"),
         ("confirmed", "Confirmed"),
@@ -61,6 +62,7 @@ class Order(models.Model):
         ("delivered", "Delivered"),
         ("cancelled", "Cancelled"),
     ]
+
     PAYMENT_METHOD_CHOICES = [
         ("bkash", "bKash"),
         ("nagad", "Nagad"),
@@ -69,16 +71,60 @@ class Order(models.Model):
         ("cod", "Cash on Delivery"),
     ]
 
+    PAYMENT_STATUS_CHOICES = [
+        ("unpaid", "Unpaid"),
+        ("pending", "Pending Verification"),
+        ("paid", "Paid"),
+        ("rejected", "Rejected"),
+    ]
+
     customer = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="orders"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="orders"
     )
-    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default="pending")
-    payment_method = models.CharField(max_length=10, choices=PAYMENT_METHOD_CHOICES, default="cod")
+
+    status = models.CharField(
+        max_length=12,
+        choices=STATUS_CHOICES,
+        default="pending"
+    )
+
+    payment_method = models.CharField(
+        max_length=10,
+        choices=PAYMENT_METHOD_CHOICES,
+        default="cod"
+    )
+
+    payment_status = models.CharField(
+        max_length=25,
+        choices=PAYMENT_STATUS_CHOICES,
+        default="unpaid"
+    )
+
     is_paid = models.BooleanField(default=False)
-    transaction_id = models.CharField(max_length=40, blank=True)
-    paid_at = models.DateTimeField(null=True, blank=True)
-    delivery_fee = models.DecimalField(max_digits=6, decimal_places=2, default=40)
-    delivery_address = models.CharField(max_length=255, blank=True)
+
+    transaction_id = models.CharField(
+        max_length=40,
+        blank=True
+    )
+
+    paid_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    delivery_fee = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        default=40
+    )
+
+    delivery_address = models.CharField(
+        max_length=255,
+        blank=True
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
